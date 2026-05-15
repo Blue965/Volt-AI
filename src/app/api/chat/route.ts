@@ -98,12 +98,12 @@ export async function POST(request: Request) {
           Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
         },
         body: JSON.stringify({
-          model: body.model || "anthropic/claude-3.5-sonnet",
+          model: body.model || "openai/gpt-5.5-pro",
           messages: [
             { role: "system", content: systemPrompt },
             ...body.messages.map((message) => ({ role: message.role, content: message.content })),
           ],
-          max_tokens: 800,
+          max_tokens: 16000,
         }),
       });
 
