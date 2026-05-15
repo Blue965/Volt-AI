@@ -13,11 +13,7 @@ import {
 } from "lucide-react";
 
 export default function Sidebar() {
-  const [chats] = useState([
-    { id: 1, title: "Roblox Script Generator", date: "Today" },
-    { id: 2, title: "UI System Design", date: "Yesterday" },
-    { id: 3, title: "Gameplay Mechanics", date: "2 days ago" },
-  ]);
+  const [chats] = useState<{ id: number; title: string; date: string }[]>([]);
 
   return (
     <div className="w-72 h-full flex flex-col bg-gray-50">

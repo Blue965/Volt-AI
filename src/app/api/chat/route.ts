@@ -108,8 +108,9 @@ export async function POST(request: Request) {
       });
 
       const data = await response.json();
+      console.log("OpenRouter API response:", data);
       if (!response.ok) {
-        return NextResponse.json({ error: data.error?.message || "OpenRouter API error." }, { status: response.status });
+        return NextResponse.json({ error: data.error?.message || JSON.stringify(data) || "OpenRouter API error." }, { status: response.status });
       }
 
       return NextResponse.json({ content: data.choices?.[0]?.message?.content || "" });
