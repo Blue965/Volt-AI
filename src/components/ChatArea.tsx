@@ -24,7 +24,7 @@ export default function ChatArea({ onArtifactGenerate }: ChatAreaProps) {
     {
       id: 1,
       role: "assistant",
-      content: "Hey there! 👋 I'm Volt AI, your super enthusiastic coding buddy for Roblox development! 🎮 Ready to build something amazing together? Let's go! 🚀",
+      content: "Hey there! 👋 I'm Volt AI, your friendly coding buddy for Roblox development! 🎮 How can I help you today?",
     },
   ]);
   const [input, setInput] = useState("");
@@ -32,6 +32,7 @@ export default function ChatArea({ onArtifactGenerate }: ChatAreaProps) {
   const [copiedId, setCopiedId] = useState<number | null>(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -58,16 +59,21 @@ export default function ChatArea({ onArtifactGenerate }: ChatAreaProps) {
   };
 
   const handleSend = async () => {
-    if (!input.trim()) return;
+    if (!input.trim() && !selectedImage) return;
+
+    const messageContent = selectedImage 
+      ? `${input}\n[Image attached]` 
+      : input;
 
     const userMessage: Message = {
       id: messages.length + 1,
       role: "user",
-      content: input,
+      content: messageContent,
     };
 
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
+    setSelectedImage(null);
     setIsTyping(true);
 
     try {
@@ -78,7 +84,8 @@ export default function ChatArea({ onArtifactGenerate }: ChatAreaProps) {
         },
         body: JSON.stringify({
           messages: messages.map((m) => ({ role: m.role, content: m.content })),
-          provider: "groq", // or "openai", "claude", "openrouter"
+          provider: "groq",
+          image: selectedImage,
         }),
       });
 
@@ -134,6 +141,21 @@ export default function ChatArea({ onArtifactGenerate }: ChatAreaProps) {
   };
 
   const emojis = ["😀", "😎", "🚀", "🎮", "💻", "🔥", "✨", "🎯", "💪", "🤖", "🌟", "⚡"];
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSelectedImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setSelectedImage(null);
+  };
 
   return (
     <div className="flex-1 flex flex-col bg-transparent">
@@ -268,79 +290,113 @@ export default function ChatArea({ onArtifactGenerate }: ChatAreaProps) {
               )}
             </AnimatePresence>
 
-            <div className="flex items-end space-x-3">
-              {/* Action Buttons */}
-              <div className="flex items-center space-x-2">
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  className="p-2 text-gray-500 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition-all"
-                  title="Attach file"
+            <div className="flex flex-col space-y-3">
+              {/* Image Preview */}
+              {selectedImage && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="relative inline-block"
                 >
-                  <Paperclip className="w-5 h-5" />
-                </motion.button>
-                
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                  className="p-2 text-gray-500 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition-all"
-                  title="Add emoji"
-                >
-                  <Smile className="w-5 h-5" />
-                </motion.button>
-                
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  className={`p-2 rounded-xl transition-all ${isRecording ? 'text-red-500 bg-red-50' : 'text-gray-500 hover:text-purple-600 hover:bg-purple-50'}`}
-                  title="Voice input"
-                >
-                  <Mic className="w-5 h-5" />
-                </motion.button>
-              </div>
-
-              {/* Text Input */}
-              <textarea
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSend();
-                  }
-                }}
-                placeholder="Ask Volt AI anything about Roblox development... 🎮"
-                className="flex-1 bg-transparent border-none focus:outline-none resize-none text-base min-h-[32px] max-h-40 text-gray-700 placeholder-gray-400"
-                rows={1}
-              />
-
-              {/* Clear & Send Buttons */}
-              <div className="flex items-center space-x-2">
-                {input && (
+                  <img
+                    src={selectedImage}
+                    alt="Selected"
+                    className="max-h-40 rounded-xl border border-white/20"
+                  />
                   <motion.button
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    onClick={handleClearInput}
-                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
-                    title="Clear"
+                    onClick={handleRemoveImage}
+                    className="absolute -top-2 -right-2 p-1 bg-red-500 text-white rounded-full shadow-lg"
                   >
-                    <X className="w-5 h-5" />
+                    <X className="w-4 h-4" />
                   </motion.button>
-                )}
-                
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleSend}
-                  disabled={!input.trim() || isTyping}
-                  className="p-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-2xl hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                >
-                  <Send className="w-5 h-5" />
-                </motion.button>
+                </motion.div>
+              )}
+
+              <div className="flex items-end space-x-3">
+                {/* Action Buttons */}
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    id="image-upload"
+                  />
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => document.getElementById('image-upload')?.click()}
+                    className="p-2 text-gray-500 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition-all"
+                    title="Attach image"
+                  >
+                    <Paperclip className="w-5 h-5" />
+                  </motion.button>
+                  
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                    className="p-2 text-gray-500 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition-all"
+                    title="Add emoji"
+                  >
+                    <Smile className="w-5 h-5" />
+                  </motion.button>
+                  
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    className={`p-2 rounded-xl transition-all ${isRecording ? 'text-red-500 bg-red-50' : 'text-gray-500 hover:text-purple-600 hover:bg-purple-50'}`}
+                    title="Voice input"
+                  >
+                    <Mic className="w-5 h-5" />
+                  </motion.button>
+                </div>
+
+                {/* Text Input */}
+                <textarea
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSend();
+                    }
+                  }}
+                  placeholder="Ask Volt AI anything about Roblox development... 🎮"
+                  className="flex-1 bg-transparent border-none focus:outline-none resize-none text-base min-h-[32px] max-h-40 text-gray-700 placeholder-gray-400"
+                  rows={1}
+                />
+
+                {/* Clear & Send Buttons */}
+                <div className="flex items-center space-x-2">
+                  {input && (
+                    <motion.button
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={handleClearInput}
+                      className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                      title="Clear"
+                    >
+                      <X className="w-5 h-5" />
+                    </motion.button>
+                  )}
+                  
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleSend}
+                    disabled={(!input.trim() && !selectedImage) || isTyping}
+                    className="p-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-2xl hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  >
+                    <Send className="w-5 h-5" />
+                  </motion.button>
+                </div>
               </div>
             </div>
           </motion.div>
