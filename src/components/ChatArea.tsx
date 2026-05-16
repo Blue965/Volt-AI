@@ -123,25 +123,26 @@ export default function ChatArea({ onArtifactGenerate }: ChatAreaProps) {
   };
 
   return (
-    <div className="flex-1 flex flex-col bg-white">
-      <div className="flex-1 overflow-y-auto p-4">
-        <div className="max-w-3xl mx-auto space-y-6">
+    <div className="flex-1 flex flex-col bg-transparent">
+      <div className="flex-1 overflow-y-auto p-6">
+        <div className="max-w-4xl mx-auto space-y-8">
           <AnimatePresence mode="popLayout">
             {messages.map((message) => (
               <motion.div
                 key={message.id}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
+                exit={{ opacity: 0, y: -30 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
                 className={`flex items-start space-x-4 ${
                   message.role === "user" ? "flex-row-reverse space-x-reverse" : ""
                 }`}
               >
-                <div
-                  className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg ${
                     message.role === "user"
-                      ? "bg-gray-900"
+                      ? "bg-gradient-to-br from-purple-600 to-blue-600"
                       : "bg-gradient-to-br from-gray-900 to-gray-700"
                   }`}
                 >
@@ -150,28 +151,29 @@ export default function ChatArea({ onArtifactGenerate }: ChatAreaProps) {
                   ) : (
                     <Sparkles className="w-5 h-5 text-white" />
                   )}
-                </div>
+                </motion.div>
                 <div
                   className={`flex-1 ${
                     message.role === "user" ? "text-right" : ""
                   }`}
                 >
-                  <div
-                    className={`inline-block px-4 py-3 rounded-2xl ${
+                  <motion.div
+                    whileHover={{ scale: 1.02 }}
+                    className={`inline-block px-6 py-4 rounded-3xl shadow-xl ${
                       message.role === "user"
-                        ? "bg-gray-900 text-white"
-                        : "bg-gray-100 text-gray-900"
+                        ? "bg-gradient-to-br from-purple-600 to-blue-600 text-white"
+                        : "bg-white/80 backdrop-blur-xl text-gray-900 border border-white/20"
                     }`}
                   >
-                    <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                    <p className="text-base leading-relaxed whitespace-pre-wrap">
                       {message.content}
                     </p>
-                  </div>
+                  </motion.div>
                   {message.artifact && (
-                    <div className="mt-2">
+                    <div className="mt-3">
                       <button
                         onClick={() => handleCopy(message.artifact!.code, message.id)}
-                        className="inline-flex items-center space-x-2 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-sm text-gray-600"
+                        className="inline-flex items-center space-x-2 px-4 py-2 bg-white/80 backdrop-blur-xl hover:bg-white/90 rounded-xl transition-all border border-white/20 text-sm text-gray-700 shadow-lg"
                       >
                         {copiedId === message.id ? (
                           <Check className="w-4 h-4" />
@@ -193,20 +195,26 @@ export default function ChatArea({ onArtifactGenerate }: ChatAreaProps) {
               animate={{ opacity: 1, y: 0 }}
               className="flex items-start space-x-4"
             >
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-gray-900 to-gray-700 flex items-center justify-center flex-shrink-0">
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-gray-900 to-gray-700 flex items-center justify-center flex-shrink-0 shadow-lg">
                 <Sparkles className="w-5 h-5 text-white" />
               </div>
               <div className="flex-1">
-                <div className="inline-block px-4 py-3 rounded-2xl bg-gray-100">
-                  <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
-                    <div
-                      className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                      style={{ animationDelay: "0.1s" }}
+                <div className="inline-block px-6 py-4 rounded-3xl bg-white/80 backdrop-blur-xl border border-white/20 shadow-xl">
+                  <div className="flex space-x-2">
+                    <motion.div 
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 0.6, repeat: Infinity }}
+                      className="w-2.5 h-2.5 bg-purple-500 rounded-full" 
                     />
-                    <div
-                      className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                      style={{ animationDelay: "0.2s" }}
+                    <motion.div 
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 0.6, repeat: Infinity, delay: 0.1 }}
+                      className="w-2.5 h-2.5 bg-blue-500 rounded-full" 
+                    />
+                    <motion.div 
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 0.6, repeat: Infinity, delay: 0.2 }}
+                      className="w-2.5 h-2.5 bg-pink-500 rounded-full" 
                     />
                   </div>
                 </div>
@@ -217,9 +225,12 @@ export default function ChatArea({ onArtifactGenerate }: ChatAreaProps) {
         </div>
       </div>
 
-      <div className="border-t border-gray-200 p-4">
-        <div className="max-w-3xl mx-auto">
-          <div className="flex items-end space-x-3 bg-gray-50 rounded-2xl p-3 border border-gray-200 focus-within:ring-2 focus-within:ring-gray-200 focus-within:border-transparent transition-all">
+      <div className="border-t border-white/20 p-6 bg-white/50 backdrop-blur-xl">
+        <div className="max-w-4xl mx-auto">
+          <motion.div 
+            whileFocus={{ scale: 1.01 }}
+            className="flex items-end space-x-4 bg-white/80 backdrop-blur-xl rounded-3xl p-4 border border-white/20 shadow-2xl focus-within:ring-2 focus-within:ring-purple-500/50 focus-within:border-purple-500/50 transition-all"
+          >
             <textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -230,18 +241,20 @@ export default function ChatArea({ onArtifactGenerate }: ChatAreaProps) {
                 }
               }}
               placeholder="Ask Volt AI anything about Roblox development..."
-              className="flex-1 bg-transparent border-none focus:outline-none resize-none text-sm min-h-[24px] max-h-32"
+              className="flex-1 bg-transparent border-none focus:outline-none resize-none text-base min-h-[32px] max-h-40 text-gray-700 placeholder-gray-400"
               rows={1}
             />
-            <button
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={handleSend}
               disabled={!input.trim() || isTyping}
-              className="p-2 bg-black text-white rounded-xl hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="p-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-2xl hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
               <Send className="w-5 h-5" />
-            </button>
-          </div>
-          <p className="text-xs text-gray-500 mt-2 text-center">
+            </motion.button>
+          </motion.div>
+          <p className="text-xs text-gray-500 mt-3 text-center">
             Volt AI can make mistakes. Consider checking important information.
           </p>
         </div>

@@ -39,7 +39,7 @@ export async function POST(request: Request) {
 
   try {
     if (useClaude && process.env.CLAUDE_KEY) {
-      const systemPrompt = `You are Volt AI, a helpful AI assistant for Roblox development. Respond naturally and conversationally. When you provide code, format it in markdown code blocks with the appropriate language identifier (lua, javascript, typescript, etc.). This helps the system automatically detect and display code in the artifact panel. Be friendly, helpful, and concise.`;
+      const systemPrompt = `You are Volt AI, a friendly and helpful AI assistant for Roblox development. IMPORTANT: Always respond in the same language as the user's message. If the user writes in French, respond in French. If in English, respond in English. If in Spanish, respond in Spanish. Support ALL languages naturally. Be conversational, friendly, and natural - like talking to a friend. Don't ask generic questions. Just respond naturally to what the user says. When you provide code, format it in markdown code blocks with the appropriate language identifier (lua, javascript, typescript, etc.). Keep responses concise but helpful.`;
 
       const response = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
@@ -67,7 +67,7 @@ export async function POST(request: Request) {
     }
 
     if (useOpenAI && process.env.OPENAI_API_KEY) {
-      const systemPrompt = `You are Volt AI, a helpful AI assistant for Roblox development. Respond naturally and conversationally. When you provide code, format it in markdown code blocks with the appropriate language identifier (lua, javascript, typescript, etc.). This helps the system automatically detect and display code in the artifact panel. Be friendly, helpful, and concise.`;
+      const systemPrompt = `You are Volt AI, a friendly and helpful AI assistant for Roblox development. IMPORTANT: Always respond in the same language as the user's message. If the user writes in French, respond in French. If in English, respond in English. If in Spanish, respond in Spanish. Support ALL languages naturally. Be conversational, friendly, and natural - like talking to a friend. Don't ask generic questions. Just respond naturally to what the user says. When you provide code, format it in markdown code blocks with the appropriate language identifier (lua, javascript, typescript, etc.). Keep responses concise but helpful.`;
 
       const response = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
@@ -94,7 +94,7 @@ export async function POST(request: Request) {
     }
 
     if (useOpenRouter && process.env.OPENROUTER_API_KEY) {
-      const systemPrompt = `You are Volt AI, a helpful AI assistant for Roblox development. Respond naturally and conversationally. When you provide code, format it in markdown code blocks with the appropriate language identifier (lua, javascript, typescript, etc.). This helps the system automatically detect and display code in the artifact panel. Be friendly, helpful, and concise.`;
+      const systemPrompt = `You are Volt AI, a friendly and helpful AI assistant for Roblox development. IMPORTANT: Always respond in the same language as the user's message. If the user writes in French, respond in French. If in English, respond in English. If in Spanish, respond in Spanish. Support ALL languages naturally. Be conversational, friendly, and natural - like talking to a friend. Don't ask generic questions. Just respond naturally to what the user says. When you provide code, format it in markdown code blocks with the appropriate language identifier (lua, javascript, typescript, etc.). Keep responses concise but helpful.`;
 
       const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
@@ -122,7 +122,7 @@ export async function POST(request: Request) {
     }
 
     if (useGroq && process.env.GROQ_API_KEY) {
-      const systemPrompt = `You are Volt AI, a helpful AI assistant for Roblox development. Respond naturally and conversationally. When you provide code, format it in markdown code blocks with the appropriate language identifier (lua, javascript, typescript, etc.). This helps the system automatically detect and display code in the artifact panel. Be friendly, helpful, and concise.`;
+      const systemPrompt = `You are Volt AI, a friendly and helpful AI assistant for Roblox development. IMPORTANT: Always respond in the same language as the user's message. If the user writes in French, respond in French. If in English, respond in English. If in Spanish, respond in Spanish. Support ALL languages naturally. Be conversational, friendly, and natural - like talking to a friend. Don't ask generic questions. Just respond naturally to what the user says. When you provide code, format it in markdown code blocks with the appropriate language identifier (lua, javascript, typescript, etc.). Keep responses concise but helpful.`;
 
       const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",

@@ -22,7 +22,7 @@ export default function Workspace() {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-white">
+    <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 via-purple-50 to-blue-50">
       <TopNav onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
       
       <div className="flex-1 flex overflow-hidden">
@@ -32,8 +32,8 @@ export default function Workspace() {
               initial={{ width: 0, opacity: 0 }}
               animate={{ width: 280, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
-              transition={{ duration: 0.2, ease: "easeInOut" }}
-              className="border-r border-gray-200 bg-gray-50"
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="border-r border-white/20 bg-white/70 backdrop-blur-xl"
             >
               <Sidebar />
             </motion.div>
@@ -49,8 +49,8 @@ export default function Workspace() {
                 initial={{ width: 0, opacity: 0 }}
                 animate={{ width: 500, opacity: 1 }}
                 exit={{ width: 0, opacity: 0 }}
-                transition={{ duration: 0.2, ease: "easeInOut" }}
-                className="border-l border-gray-200 bg-white"
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="border-l border-white/20 bg-white/80 backdrop-blur-xl"
               >
                 {artifactContent && (
                   <ArtifactPanel
