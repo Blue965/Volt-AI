@@ -76,7 +76,7 @@ export default function ChatArea({ onArtifactGenerate }: ChatAreaProps) {
         },
         body: JSON.stringify({
           messages: messages.map((m) => ({ role: m.role, content: m.content })),
-          provider: "openrouter", // or "openai", "claude"
+          provider: "groq", // or "openai", "claude", "openrouter"
         }),
       });
 
