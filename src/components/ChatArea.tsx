@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Sparkles, User, Bot, Copy, Check } from "lucide-react";
+import { Send, Sparkles, User, Bot, Copy, Check, Paperclip, Mic, Smile, X } from "lucide-react";
 
 interface ChatAreaProps {
   onArtifactGenerate: (code: string, language: string, title: string) => void;
@@ -24,12 +24,14 @@ export default function ChatArea({ onArtifactGenerate }: ChatAreaProps) {
     {
       id: 1,
       role: "assistant",
-      content: "Hello! I'm Volt AI, your assistant for Roblox development. How can I help you build amazing games today?",
+      content: "Hey there! 👋 I'm Volt AI, your super enthusiastic coding buddy for Roblox development! 🎮 Ready to build something amazing together? Let's go! 🚀",
     },
   ]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [copiedId, setCopiedId] = useState<number | null>(null);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -121,6 +123,17 @@ export default function ChatArea({ onArtifactGenerate }: ChatAreaProps) {
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
   };
+
+  const handleEmojiClick = (emoji: string) => {
+    setInput((prev) => prev + emoji);
+    setShowEmojiPicker(false);
+  };
+
+  const handleClearInput = () => {
+    setInput("");
+  };
+
+  const emojis = ["😀", "😎", "🚀", "🎮", "💻", "🔥", "✨", "🎯", "💪", "🤖", "🌟", "⚡"];
 
   return (
     <div className="flex-1 flex flex-col bg-transparent">
@@ -229,33 +242,110 @@ export default function ChatArea({ onArtifactGenerate }: ChatAreaProps) {
         <div className="max-w-4xl mx-auto">
           <motion.div 
             whileFocus={{ scale: 1.01 }}
-            className="flex items-end space-x-4 bg-white/80 backdrop-blur-xl rounded-3xl p-4 border border-white/20 shadow-2xl focus-within:ring-2 focus-within:ring-purple-500/50 focus-within:border-purple-500/50 transition-all"
+            className="relative bg-white/80 backdrop-blur-xl rounded-3xl p-4 border border-white/20 shadow-2xl focus-within:ring-2 focus-within:ring-purple-500/50 focus-within:border-purple-500/50 transition-all"
           >
-            <textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSend();
-                }
-              }}
-              placeholder="Ask Volt AI anything about Roblox development..."
-              className="flex-1 bg-transparent border-none focus:outline-none resize-none text-base min-h-[32px] max-h-40 text-gray-700 placeholder-gray-400"
-              rows={1}
-            />
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleSend}
-              disabled={!input.trim() || isTyping}
-              className="p-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-2xl hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-            >
-              <Send className="w-5 h-5" />
-            </motion.button>
+            {/* Emoji Picker */}
+            <AnimatePresence>
+              {showEmojiPicker && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  className="absolute bottom-full left-0 mb-2 p-3 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 grid grid-cols-6 gap-2"
+                >
+                  {emojis.map((emoji) => (
+                    <motion.button
+                      key={emoji}
+                      whileHover={{ scale: 1.2 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => handleEmojiClick(emoji)}
+                      className="text-2xl p-2 hover:bg-purple-100 rounded-xl transition-colors"
+                    >
+                      {emoji}
+                    </motion.button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <div className="flex items-end space-x-3">
+              {/* Action Buttons */}
+              <div className="flex items-center space-x-2">
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="p-2 text-gray-500 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition-all"
+                  title="Attach file"
+                >
+                  <Paperclip className="w-5 h-5" />
+                </motion.button>
+                
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                  className="p-2 text-gray-500 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition-all"
+                  title="Add emoji"
+                >
+                  <Smile className="w-5 h-5" />
+                </motion.button>
+                
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className={`p-2 rounded-xl transition-all ${isRecording ? 'text-red-500 bg-red-50' : 'text-gray-500 hover:text-purple-600 hover:bg-purple-50'}`}
+                  title="Voice input"
+                >
+                  <Mic className="w-5 h-5" />
+                </motion.button>
+              </div>
+
+              {/* Text Input */}
+              <textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSend();
+                  }
+                }}
+                placeholder="Ask Volt AI anything about Roblox development... 🎮"
+                className="flex-1 bg-transparent border-none focus:outline-none resize-none text-base min-h-[32px] max-h-40 text-gray-700 placeholder-gray-400"
+                rows={1}
+              />
+
+              {/* Clear & Send Buttons */}
+              <div className="flex items-center space-x-2">
+                {input && (
+                  <motion.button
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={handleClearInput}
+                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                    title="Clear"
+                  >
+                    <X className="w-5 h-5" />
+                  </motion.button>
+                )}
+                
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleSend}
+                  disabled={!input.trim() || isTyping}
+                  className="p-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-2xl hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                >
+                  <Send className="w-5 h-5" />
+                </motion.button>
+              </div>
+            </div>
           </motion.div>
           <p className="text-xs text-gray-500 mt-3 text-center">
-            Volt AI can make mistakes. Consider checking important information.
+            Volt AI can make mistakes. Consider checking important information. 🎮
           </p>
         </div>
       </div>
